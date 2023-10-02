@@ -91,7 +91,7 @@ void Stack_Init( Stack *stack ) {
  * @returns true v případě, že je zásobník prázdný, jinak false
  */
 bool Stack_IsEmpty( const Stack *stack ) {
-    return (stack->topIndex == -1)?true:false;
+    return stack->topIndex == -1;
 }
 
 /**
@@ -107,7 +107,7 @@ bool Stack_IsEmpty( const Stack *stack ) {
  * @returns true v případě, že je zásobník plný, jinak false
  */
 bool Stack_IsFull( const Stack *stack ) {
-    return (stack->topIndex == STACK_SIZE-1)?true:false;
+    return stack->topIndex == STACK_SIZE-1;
 }
 
 /**
