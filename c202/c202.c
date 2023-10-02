@@ -76,8 +76,8 @@ void Stack_Init( Stack *stack ) {
         Stack_Error(SERR_INIT);
         return;
     }
-    stack = malloc(sizeof(Stack));
-    stack->array = malloc( sizeof(char) * STACK_SIZE);
+
+    stack->array = (char *) malloc(sizeof(char) * STACK_SIZE);
     stack->topIndex = -1;
 }
 
@@ -127,6 +127,7 @@ void Stack_Top( const Stack *stack, char *dataPtr ) {
         Stack_Error(SERR_TOP);
         return;
     }
+
     *dataPtr = stack->array[stack->topIndex];
 }
 
@@ -146,7 +147,7 @@ void Stack_Top( const Stack *stack, char *dataPtr ) {
 void Stack_Pop( Stack *stack ) {
     if (Stack_IsEmpty(stack))
         return;
-    stack->array[stack->topIndex] = (char) NULL;
+
     stack->topIndex--;
 }
 
@@ -166,7 +167,8 @@ void Stack_Push( Stack *stack, char data ) {
         Stack_Error(SERR_PUSH);
         return;
     }
-    stack->topIndex++;
+
+    (stack->topIndex)++;
     stack->array[stack->topIndex] = data;
 }
 
@@ -178,13 +180,12 @@ void Stack_Push( Stack *stack, char data ) {
  * @param stack Ukazatel na inicializovanou strukturu zásobníku
  */
 void Stack_Dispose( Stack *stack ) {
-    //stack->topIndex = -1;
-    //free(stack->array);
-    //stack = NULL;
     for (int i = stack->topIndex; i > -1; --i) {
         Stack_Pop(stack);
     }
-    stack->topIndex = -1;
+
+    free(stack->array);
+    stack->array = NULL;
 }
 
 /* Konec c202.c */
