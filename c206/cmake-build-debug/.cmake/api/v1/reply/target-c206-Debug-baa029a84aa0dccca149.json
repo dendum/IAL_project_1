@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "c204.exe"
+			"path" : "c206.exe"
 		},
 		{
-			"path" : "c204.pdb"
+			"path" : "c206.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -56,7 +56,7 @@
 			]
 		}
 	],
-	"id" : "c204::@6890427a1f51a3e7e1df",
+	"id" : "c206::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -76,8 +76,8 @@
 		],
 		"language" : "C"
 	},
-	"name" : "c204",
-	"nameOnDisk" : "c204.exe",
+	"name" : "c206",
+	"nameOnDisk" : "c206.exe",
 	"paths" : 
 	{
 		"build" : ".",
