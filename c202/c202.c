@@ -42,7 +42,7 @@ bool solved;
  *
  * @param error_code Interní identifikátor chyby
  */
-void Stack_Error( int error_code ) {
+void Stack_Error(int error_code) {
     static const char *SERR_STRINGS[MAX_SERR + 1] = {
             "Unknown error",
             "Stack error: INIT",
@@ -50,8 +50,7 @@ void Stack_Error( int error_code ) {
             "Stack error: TOP"
     };
 
-    if (error_code <= 0 || error_code > MAX_SERR)
-    {
+    if (error_code <= 0 || error_code > MAX_SERR) {
         error_code = 0;
     }
 
@@ -71,7 +70,7 @@ void Stack_Error( int error_code ) {
  *
  * @param stack Ukazatel na strukturu zásobníku
  */
-void Stack_Init( Stack *stack ) {
+void Stack_Init(Stack *stack) {
     if (stack == NULL) {
         Stack_Error(SERR_INIT);
         return;
@@ -93,7 +92,7 @@ void Stack_Init( Stack *stack ) {
  *
  * @returns true v případě, že je zásobník prázdný, jinak false
  */
-bool Stack_IsEmpty( const Stack *stack ) {
+bool Stack_IsEmpty(const Stack *stack) {
     return stack->topIndex == -1;
 }
 
@@ -109,8 +108,8 @@ bool Stack_IsEmpty( const Stack *stack ) {
  *
  * @returns true v případě, že je zásobník plný, jinak false
  */
-bool Stack_IsFull( const Stack *stack ) {
-    return stack->topIndex == STACK_SIZE-1;
+bool Stack_IsFull(const Stack *stack) {
+    return stack->topIndex == STACK_SIZE - 1;
 }
 
 /**
@@ -125,7 +124,7 @@ bool Stack_IsFull( const Stack *stack ) {
  * @param stack Ukazatel na inicializovanou strukturu zásobníku
  * @param dataPtr Ukazatel na cílovou proměnnou
  */
-void Stack_Top( const Stack *stack, char *dataPtr ) {
+void Stack_Top(const Stack *stack, char *dataPtr) {
     if (Stack_IsEmpty(stack)) {
         Stack_Error(SERR_TOP);
         return;
@@ -147,7 +146,7 @@ void Stack_Top( const Stack *stack, char *dataPtr ) {
  *
  * @param stack Ukazatel na inicializovanou strukturu zásobníku
  */
-void Stack_Pop( Stack *stack ) {
+void Stack_Pop(Stack *stack) {
     if (Stack_IsEmpty(stack))
         return;
 
@@ -165,8 +164,8 @@ void Stack_Pop( Stack *stack ) {
  * @param stack Ukazatel na inicializovanou strukturu zásobníku
  * @param data Znak k vložení
  */
-void Stack_Push( Stack *stack, char data ) {
-    if (Stack_IsFull(stack)){
+void Stack_Push(Stack *stack, char data) {
+    if (Stack_IsFull(stack)) {
         Stack_Error(SERR_PUSH);
         return;
     }
@@ -182,10 +181,9 @@ void Stack_Push( Stack *stack, char data ) {
  *
  * @param stack Ukazatel na inicializovanou strukturu zásobníku
  */
-void Stack_Dispose( Stack *stack ) {
-    for (int i = stack->topIndex; i > -1; --i) {
+void Stack_Dispose(Stack *stack) {
+    while (!Stack_IsEmpty(stack))
         Stack_Pop(stack);
-    }
 
     free(stack->array);
     stack->array = NULL;
