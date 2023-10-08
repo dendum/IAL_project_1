@@ -1,3 +1,0 @@
-D:/Other/3_semestr/IAL/IAL_project_1/c204/cmake-build-debug/CMakeFiles/c204.dir
-D:/Other/3_semestr/IAL/IAL_project_1/c204/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Other/3_semestr/IAL/IAL_project_1/c204/cmake-build-debug/CMakeFiles/rebuild_cache.dir
