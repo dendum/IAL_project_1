@@ -37,8 +37,7 @@
 
 bool solved;
 
-int precedence(char operator)
-{
+int precedence(char operator) {
     switch (operator) {
         case '+':
         case '-':
@@ -77,8 +76,17 @@ int isOperator(char ch)
  * @param postfixExpression Znakový řetězec obsahující výsledný postfixový výraz
  * @param postfixExpressionLength Ukazatel na aktuální délku výsledného postfixového výrazu
  */
-void untilLeftPar( Stack *stack, char *postfixExpression, unsigned *postfixExpressionLength ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
+void untilLeftPar(Stack *stack, char *postfixExpression, int *postfixExpressionLength) {
+    char top;
+    Stack_Top(stack, &top);
+    while (!Stack_IsEmpty(stack) && top != '(') {
+        postfixExpression[(*postfixExpressionLength)++] = top;
+        Stack_Pop(stack);
+        if (!Stack_IsEmpty(stack)) {
+            Stack_Top(stack, &top);
+        }
+    }
+    Stack_Pop(stack);
 }
 
 /**
@@ -97,8 +105,16 @@ void untilLeftPar( Stack *stack, char *postfixExpression, unsigned *postfixExpre
  * @param postfixExpression Znakový řetězec obsahující výsledný postfixový výraz
  * @param postfixExpressionLength Ukazatel na aktuální délku výsledného postfixového výrazu
  */
-void doOperation( Stack *stack, char c, char *postfixExpression, unsigned *postfixExpressionLength ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
+void doOperation(Stack *stack, char c, char *postfixExpression, int *postfixExpressionLength) {
+    char top;
+    Stack_Top(stack, &top);
+    while (!Stack_IsEmpty(stack) && precedence(top) >= precedence(c)) {
+        postfixExpression[(*postfixExpressionLength)++] = top;
+        Stack_Pop(stack);
+        if (!Stack_IsEmpty(stack)) {
+            Stack_Top(stack, &top);
+        }
+    }
 }
 
 /**
@@ -149,17 +165,19 @@ void doOperation( Stack *stack, char c, char *postfixExpression, unsigned *postf
  *
  * @returns znakový řetězec obsahující výsledný postfixový výraz
  */
-char *infix2postfix( const char *infixExpression ) {
-//	solved = false; /* V případě řešení, smažte tento řádek! */
+char *infix2postfix(const char *infixExpression) {
     int i, j;
-    int len = strlen(infixExpression);
-    char *postfix = (char*) malloc(sizeof(char) * (len));
-    if (postfix == NULL)
-        return NULL;
-    Stack _stack;
-	Stack *stack = &_stack;
-    Stack_Init(stack);
     char top;
+    int len = strlen(infixExpression);
+
+    char *postfix = (char *) malloc(sizeof(char) * (len));
+    if (postfix == NULL) {
+        return NULL;
+    }
+
+    Stack _stack;
+    Stack *stack = &_stack;
+    Stack_Init(stack);
 
     for (i = 0, j = 0; i < len; ++i) {
         if (infixExpression[i] == ' ' || infixExpression[i] == '\t')
@@ -167,35 +185,16 @@ char *infix2postfix( const char *infixExpression ) {
 
         if (isalnum(infixExpression[i])) {
             postfix[j++] = infixExpression[i];
-        }
-        else if (infixExpression[i] == '(') {
+        } else if (infixExpression[i] == '(') {
             Stack_Push(stack, infixExpression[i]);
-        }
-        else if (infixExpression[i] == ')') {
-            Stack_Top(stack, &top);
-            while (!Stack_IsEmpty(stack) && top != '(') {
-                postfix[j++] = top;
-                Stack_Pop(stack);
-                if (!Stack_IsEmpty(stack)) {
-                    Stack_Top(stack, &top);
-                }
-            }
-            Stack_Pop(stack);
-        }
-        else if (isOperator(infixExpression[i])) {
+        } else if (infixExpression[i] == ')') {
+            untilLeftPar(stack, postfix, &j);
+        } else if (isOperator(infixExpression[i])) {
             if (!Stack_IsEmpty(stack)) {
-                Stack_Top(stack, &top);
-                while (!Stack_IsEmpty(stack) && precedence(top) >= precedence(infixExpression[i])) {
-                    postfix[j++] = top;
-                    Stack_Pop(stack);
-                    if (!Stack_IsEmpty(stack)){
-                        Stack_Top(stack, &top);
-                    }
-                }
+                doOperation(stack, infixExpression[i], postfix, &j);
             }
             Stack_Push(stack, infixExpression[i]);
         }
-
     }
 
     while (!Stack_IsEmpty(stack)) {
@@ -208,7 +207,7 @@ char *infix2postfix( const char *infixExpression ) {
 
     Stack_Dispose(stack);
 
-	return postfix;
+    return postfix;
 }
 
 
@@ -223,8 +222,8 @@ char *infix2postfix( const char *infixExpression ) {
  * @param stack ukazatel na inicializovanou strukturu zásobníku
  * @param value hodnota k vložení na zásobník
  */
-void expr_value_push( Stack *stack, int value ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
+void expr_value_push(Stack *stack, int value) {
+    solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -239,9 +238,9 @@ void expr_value_push( Stack *stack, int value ) {
  * @param value ukazatel na celočíselnou proměnnou pro uložení
  *   výsledné celočíselné hodnoty z vrcholu zásobníku
  */
-void expr_value_pop( Stack *stack, int *value ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
-	*value = 0;
+void expr_value_pop(Stack *stack, int *value) {
+    solved = false; /* V případě řešení, smažte tento řádek! */
+    *value = 0;
 }
 
 
@@ -267,9 +266,9 @@ void expr_value_pop( Stack *stack, int *value ) {
  *
  * @return výsledek vyhodnocení daného výrazu na základě poskytnutých hodnot proměnných
  */
-bool eval( const char *infixExpression, VariableValue variableValues[], int variableValueCount, int *value ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
-	return NULL;
+bool eval(const char *infixExpression, VariableValue variableValues[], int variableValueCount, int *value) {
+    solved = false; /* V případě řešení, smažte tento řádek! */
+    return NULL;
 }
 
 /* Konec c204.c */
