@@ -32,8 +32,32 @@
 **/
 
 #include "c204.h"
+#include "string.h" // TODO: DELETE
+#include "ctype.h" // TODO: DELETE
 
 bool solved;
+
+int precedence(char operator)
+{
+    switch (operator) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        case '^':
+            return 3;
+        default:
+            return -1;
+    }
+}
+
+int isOperator(char ch)
+{
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/'
+            || ch == '^');
+}
 
 /**
  * Pomocná funkce untilLeftPar.
@@ -126,8 +150,65 @@ void doOperation( Stack *stack, char c, char *postfixExpression, unsigned *postf
  * @returns znakový řetězec obsahující výsledný postfixový výraz
  */
 char *infix2postfix( const char *infixExpression ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
-	return NULL;
+//	solved = false; /* V případě řešení, smažte tento řádek! */
+    int i, j;
+    int len = strlen(infixExpression);
+    char *postfix = (char*) malloc(sizeof(char) * (len));
+    if (postfix == NULL)
+        return NULL;
+    Stack _stack;
+	Stack *stack = &_stack;
+    Stack_Init(stack);
+    char top;
+
+    for (i = 0, j = 0; i < len; ++i) {
+        if (infixExpression[i] == ' ' || infixExpression[i] == '\t')
+            continue;
+
+        if (isalnum(infixExpression[i])) {
+            postfix[j++] = infixExpression[i];
+        }
+        else if (infixExpression[i] == '(') {
+            Stack_Push(stack, infixExpression[i]);
+        }
+        else if (infixExpression[i] == ')') {
+            Stack_Top(stack, &top);
+            while (!Stack_IsEmpty(stack) && top != '(') {
+                postfix[j++] = top;
+                Stack_Pop(stack);
+                if (!Stack_IsEmpty(stack)) {
+                    Stack_Top(stack, &top);
+                }
+            }
+            Stack_Pop(stack);
+        }
+        else if (isOperator(infixExpression[i])) {
+            if (!Stack_IsEmpty(stack)) {
+                Stack_Top(stack, &top);
+                while (!Stack_IsEmpty(stack) && precedence(top) >= precedence(infixExpression[i])) {
+                    postfix[j++] = top;
+                    Stack_Pop(stack);
+                    if (!Stack_IsEmpty(stack)){
+                        Stack_Top(stack, &top);
+                    }
+                }
+            }
+            Stack_Push(stack, infixExpression[i]);
+        }
+
+    }
+
+    while (!Stack_IsEmpty(stack)) {
+        Stack_Top(stack, &top);
+        postfix[j++] = top;
+        Stack_Pop(stack);
+    }
+    postfix[j++] = '=';
+    postfix[j] = '\0';
+
+    Stack_Dispose(stack);
+
+	return postfix;
 }
 
 
