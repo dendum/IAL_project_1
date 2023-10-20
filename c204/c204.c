@@ -32,8 +32,6 @@
 **/
 
 #include "c204.h"
-#include "string.h" // TODO: DELETE
-#include "ctype.h" // TODO: DELETE
 
 bool solved;
 
@@ -45,17 +43,17 @@ int precedence(char operator) {
         case '*':
         case '/':
             return 2;
-        case '^':
-            return 3;
         default:
             return -1;
     }
 }
 
-int isOperator(char ch)
-{
-    return (ch == '+' || ch == '-' || ch == '*' || ch == '/'
-            || ch == '^');
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
+}
+
+bool isAlphanumeric(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
 /**
@@ -168,9 +166,8 @@ void doOperation(Stack *stack, char c, char *postfixExpression, int *postfixExpr
 char *infix2postfix(const char *infixExpression) {
     int i, j;
     char top;
-    int len = strlen(infixExpression);
 
-    char *postfix = (char *) malloc(sizeof(char) * (len));
+    char *postfix = (char *) malloc(sizeof(char) * MAX_LEN);
     if (postfix == NULL) {
         return NULL;
     }
@@ -179,11 +176,11 @@ char *infix2postfix(const char *infixExpression) {
     Stack *stack = &_stack;
     Stack_Init(stack);
 
-    for (i = 0, j = 0; i < len; ++i) {
+    for (i = 0, j = 0; infixExpression[i]; ++i) {
         if (infixExpression[i] == ' ' || infixExpression[i] == '\t')
             continue;
 
-        if (isalnum(infixExpression[i])) {
+        if (isAlphanumeric(infixExpression[i])) {
             postfix[j++] = infixExpression[i];
         } else if (infixExpression[i] == '(') {
             Stack_Push(stack, infixExpression[i]);
@@ -210,6 +207,14 @@ char *infix2postfix(const char *infixExpression) {
     return postfix;
 }
 
+int findVariableValue(const VariableValue values[], int numValues, char variableName) {
+    for (int i = 0; i < numValues; i++) {
+        if (values[i].name == variableName) {
+            return values[i].value;
+        }
+    }
+    return 0;
+}
 
 /**
  * Pomocná metoda pro vložení celočíselné hodnoty na zásobník.
@@ -223,7 +228,9 @@ char *infix2postfix(const char *infixExpression) {
  * @param value hodnota k vložení na zásobník
  */
 void expr_value_push(Stack *stack, int value) {
-    solved = false; /* V případě řešení, smažte tento řádek! */
+    int *intPtr = (int *) &stack->array[(stack->topIndex + 1) * sizeof(int)];
+    *intPtr = value;
+    stack->topIndex++;
 }
 
 /**
@@ -239,8 +246,13 @@ void expr_value_push(Stack *stack, int value) {
  *   výsledné celočíselné hodnoty z vrcholu zásobníku
  */
 void expr_value_pop(Stack *stack, int *value) {
-    solved = false; /* V případě řešení, smažte tento řádek! */
-    *value = 0;
+    if (stack->topIndex >= 0) {
+        int *intPtr = (int *) &stack->array[stack->topIndex * sizeof(int)];
+        *value = *intPtr;
+        stack->topIndex--;
+    } else {
+        *value = 0;
+    }
 }
 
 
@@ -267,8 +279,58 @@ void expr_value_pop(Stack *stack, int *value) {
  * @return výsledek vyhodnocení daného výrazu na základě poskytnutých hodnot proměnných
  */
 bool eval(const char *infixExpression, VariableValue variableValues[], int variableValueCount, int *value) {
-    solved = false; /* V případě řešení, smažte tento řádek! */
-    return NULL;
+    char *postfix = infix2postfix(infixExpression);
+    if (postfix == NULL) {
+        return false;
+    }
+
+    Stack _stack;
+    Stack *stack = &_stack;
+    Stack_Init(stack);
+
+    for (int i = 0; postfix[i]; i++) {
+        if (postfix[i] == '=')
+            continue;
+
+        if (isAlphanumeric(postfix[i])) {
+            if ((postfix[i] >= '0' && postfix[i] <= '9')) {
+                expr_value_push(stack, postfix[i] - '0');
+            } else {
+                expr_value_push(stack, findVariableValue(variableValues, variableValueCount, postfix[i]));
+            }
+        } else {
+            int operand2;
+            int operand1;
+            expr_value_pop(stack, &operand2);
+            expr_value_pop(stack, &operand1);
+
+            switch (postfix[i]) {
+                case '+':
+                    expr_value_push(stack, operand1 + operand2);
+                    break;
+                case '-':
+                    expr_value_push(stack, operand1 - operand2);
+                    break;
+                case '*':
+                    expr_value_push(stack, operand1 * operand2);
+                    break;
+                case '/':
+                    if (operand2 == 0) {
+                        Stack_Dispose(stack);
+                        free(postfix);
+                        return false;
+                    }
+                    expr_value_push(stack, operand1 / operand2);
+                    break;
+            }
+        }
+    }
+
+    expr_value_pop(stack, value);
+    Stack_Dispose(stack);
+    free(postfix);
+
+    return true;
 }
 
 /* Konec c204.c */

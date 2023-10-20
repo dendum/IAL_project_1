@@ -94,6 +94,8 @@ char* infixToPostfix(char* infix)
 int main()
 {
     char infix[MAX_EXPR_SIZE] = "a+b*(c^d-e)^(f+g*h)-i";
+//    char infix[MAX_EXPR_SIZE] = "(A - B) + (C+D) * (E - F) + (G + H) * (I / J)";
+//    char infix[MAX_EXPR_SIZE] = "a*b+c/d";
 
     // Function call
     char* postfix = infixToPostfix(infix);
