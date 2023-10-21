@@ -228,9 +228,9 @@ int findVariableValue(const VariableValue values[], int numValues, char variable
  * @param value hodnota k vložení na zásobník
  */
 void expr_value_push(Stack *stack, int value) {
-    int *intPtr = (int *) &stack->array[(stack->topIndex + 1) * sizeof(int)];
-    *intPtr = value;
     stack->topIndex++;
+    int *intPtr = (int *) &stack->array[(stack->topIndex) * sizeof(int)];
+    *intPtr = value;
 }
 
 /**

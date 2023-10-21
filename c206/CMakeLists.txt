@@ -3,4 +3,5 @@ project(c206 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(c206 main.c)
+add_executable(c206 main.c
+        c206.c)
