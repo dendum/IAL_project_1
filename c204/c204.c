@@ -35,6 +35,16 @@
 
 bool solved;
 
+/**
+ * Function to determine the precedence of an operator.
+ *
+ * This function takes an operator character as input and returns its precedence value.
+ * Precedence values: '+' and '-' have a precedence of 1, '*' and '/' have a precedence of 2,
+ * and all other characters have a precedence of -1.
+ *
+ * @param operator The operator character for which precedence needs to be determined.
+ * @return The precedence value of the operator.
+ */
 int precedence(char operator) {
     switch (operator) {
         case '+':
@@ -48,10 +58,25 @@ int precedence(char operator) {
     }
 }
 
-int isOperator(char ch) {
+
+/**
+ * Function to check if a character is an operator.
+ * This function takes a character as input and checks
+ * if it is one of the four supported operators: '+', '-', '*', or '/'.
+ *
+ * @param ch The character to be checked.
+ * @return true if the character is an operator, false otherwise.
+ */
+bool isOperator(char ch) {
     return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
 }
 
+/**
+ * Function to check whether a character is a letter (lowercase or uppercase) or a digit (0-9).
+ *
+ * @param c The character to be checked.
+ * @return true if the character is alphanumeric, false otherwise.
+ */
 bool isAlphanumeric(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
@@ -207,6 +232,15 @@ char *infix2postfix(const char *infixExpression) {
     return postfix;
 }
 
+/**
+ * This function searches for a variable with a specified name in the provided array of VariableValue structures
+ * and returns its corresponding value.
+ *
+ * @param values An array of VariableValue structures.
+ * @param numValues The number of VariableValue structures in the array.
+ * @param variableName The name of the variable to find.
+ * @return The value of the variable if found; otherwise, it returns 0.
+ */
 int findVariableValue(const VariableValue values[], int numValues, char variableName) {
     for (int i = 0; i < numValues; i++) {
         if (values[i].name == variableName) {
